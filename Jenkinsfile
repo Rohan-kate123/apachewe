@@ -31,11 +31,7 @@ pipeline {
                 sh 'mvn package'
             }
         }
-         stage('build image') {
-            steps {
-                sh 'docker build -t netflix2 .'
-            }
-        }
+
 
         stage('build image') {
             steps {
