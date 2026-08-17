@@ -1,52 +1,43 @@
 pipeline {
-    environment {
-        IMAGE_NAME="agasprosper/simple-java-pipeline-project:${BUILD_ID}"
-    }
     agent any
+
     tools {
-        maven "Maven"
+        maven 'maven'
     }
 
     stages {
-        stage ("Testing stage") {
+
+        stage('code') {
             steps {
-                echo "No test for now"
-            }
-        }
-        stage ("Build Stage") {
-            steps {
-                sh "mvn clean package"
+                git branch: 'main',
+                    url: 'https://github.com/tom-cat-1-dot/apachewe.git'
             }
         }
 
-        stage ("Build DockerImage") {
+        stage('Build') {
             steps {
-                sh "docker build -t $IMAGE_NAME ."
-            }
-        } 
-        stage ("Pushing to Docker Hub") {
-            steps {
-                script{
-                    withCredentials([usernamePassword(credentialsId: 'jenkins-to-access-dockerhub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh "docker push $IMAGE_NAME"
-                    }
-                }
+                sh 'mvn compile'
             }
         }
-        stage ("deployment stage") {
+
+        stage('Test') {
             steps {
-                script {
-                    def ShellCmd = "bash ./script.sh $IMAGE_NAME"
-                    sshagent(["ssh-key"]) {
-                        sh "scp -o StrictHostKeyCheching=no docker-compose.yml ec2-user@18.234.68.229:/home/ec2-user"
-                        sh "scp -o StrictHostKeyCheching=no script.sh ec2-user@18.234.68.229:/home/ec2-"
-                        sh "ssh -o StrictHostKeyCheching=no ec2-user@18.234.68.229:/home/ec2-user ${ShellCmd}" 
-                        echo "SUCCESS"
-                    }
-                    
-                }
+                sh 'mvn test'
             }
         }
+
+        stage('Artifacts') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+
+        stage('build image') {
+            steps {
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://65.2.153.97:8080')], contextPath: 'netflix', war: 'target/*'
+            }
+        }
+
+
     }
 }
