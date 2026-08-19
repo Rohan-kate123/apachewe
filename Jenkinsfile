@@ -44,7 +44,7 @@ pipeline {
                     adapters: [
                         tomcat9(
                             credentialsId: 'jenkins',
-                            url: 'http://13.203.203.183:8080'
+                            url: 'http://65.1.100.168:8080'
                         )
                     ],
                     contextPath: 'netflix',
