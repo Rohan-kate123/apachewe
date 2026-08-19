@@ -43,11 +43,13 @@ pipeline {
                 deploy(
                     adapters: [
                         tomcat9(
+                            alternativeDeploymentContext: '',
                             credentialsId: 'jenkins',
+                            path: ''
                             url: 'http://65.1.100.168:8080'
                         )
                     ],
-                    contextPath: 'project',
+                    contextPath: 'sample',
                     war: 'target/*.war'
                 )
             }
