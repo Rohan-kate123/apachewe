@@ -34,7 +34,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t netflix2 .'
+                sh 'docker build -t netflix5 .'
             }
         }
 
@@ -47,7 +47,7 @@ pipeline {
                             url: 'http://65.1.100.168:8080'
                         )
                     ],
-                    contextPath: 'netflix',
+                    contextPath: 'project',
                     war: 'target/*.war'
                 )
             }
